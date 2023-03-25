@@ -57,16 +57,21 @@ if __name__ == '__main__':
     for record in query_results:
         print(record)
     #3.5 ✅ Update 
-        
+
     # Update the first pet's name and print the updated pet info
-
+    first_pet = session.query(Pet).first()
+    first_pet.name = "Bud"
+    session.commit()
     # Update all the pets' temperaments to 'cool' and print the pets 
-
+    session.query(Pet).update({Pet.temperament: 'cool'})
+    pets = session.query(Pet)
+    print([pet for pet in pets])
     #3.6 ✅ Delete
         
     # Delete one item by querying the first pet, deleting it and committing
-
+    first_pet = session.query(Pet).first()
+    session.delete(first_pet)
     # Delete all the pets with session.query and .delete
-  
+    session.query(Pet).delete()
     # optional Break point for debugging and testing
     import ipdb; ipdb.set_trace()
