@@ -13,12 +13,12 @@ from models import (Base, Pet)
 if __name__ == '__main__':
     
     #3.1 ✅ Uncomment below to create the engine.
-    # engine = create_engine('sqlite:///pet_app.db')
-    # Base.metadata.create_all(engine)
+    engine = create_engine('sqlite:///pet_app.db')
+    Base.metadata.create_all(engine)
     
     #3.2 ✅ Uncomment below to create sessions and bind to the engine.
-    # Session = sessionmaker(bind=engine)
-    # session = Session()
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
     #3.3 ✅ Create
     
