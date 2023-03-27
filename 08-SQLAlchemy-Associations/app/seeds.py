@@ -4,7 +4,7 @@ import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Pet, Owner
+from models import Pet, Owner, Job, Handler
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///pet_app.db')
@@ -13,37 +13,75 @@ if __name__ == '__main__':
 
 # 2.a ✅ Add delete methods for Pet and Owner to clear the database before each seeding
 
+    session.query(Pet).delete()
+    session.query(Owner).delete()
+
     # Initialize faker
 
+    faker = Faker()
+
     # Create List of species with "Cat" and "Dog"
+    species = ["Cat", "Dog"]
 
     # Create a List of cat breeds
+    cat_breeds = ["Domestic Long Hair", "Domestic Short Hair", "Siamese", "Ragdoll", "Sphynx", "Burmese"]
    
     # Create a List of dog breeds
- 
+    dog_breeds = ["Mix", "Husky", "Malamute", "Dachshound", "Samoyed", "Shiba Inu", "Corgi" ]
+
     # Create a List of temperaments 
-    
+    temperaments = ["Calm", "Nervous", "Mischievous", "Aggressive", "Hyper" ]
+
     # Create an empty List of owners
+    owners = []
  
     # Create a for loop that iterates 50 times
-   
+    for _ in range(50):
+
         # Create an owner using data from faker
+
+        owner = Owner(
+            name=f"{faker.first_name()} {faker.last_name()}",
+            email=faker.email(),
+            phone=random.randint(1000000000, 9999999999),
+            address=faker.address()
+        )
        
         # Use .add and .commit to save the owner one at a time, so we maintain the owner ID in our instance.
-       
+        session.add(owner)
+        session.commit()
+
         # Append each new owner to the owners array
+        owners.append(owner)
        
-    # Create an empty pets array
+    # Create an empty pets list
+    pets = []
     
     # Create a for loop that iterates over the owners array
-  
+    for owner in owners:
+
         # Create a for loop that iterates 1 - 3 times
+        for _ in range(random.randint(1,3)):
       
+            random_species = random.choice(species)
+
+                # "Cat"
+                # "Dog"
+
             # Use faker and the species, cat breeds, dog breeds and temperament Lists to create a pet
+            pet = Pet(
+                name=faker.name(),
+                species=random_species,
+                breed=random.choice(cat_breeds) if random_species == "Cat" else random.choice(dog_breeds),
+                temperament=random.choice(temperaments)
+            )
             
             # Use .add and .commit to save the pet to the database
+            session.add(pet)
+            session.commit()
           
             # Append the pet to the pets array
+            pets.append(pet)
             
 # 3. ✅ Run the seed file and head over to debug.py to test out your One to Many association
 
@@ -51,31 +89,57 @@ if __name__ == '__main__':
 
 # 5. ✅ Add Delete methods for Job and Handler
 
+    session.query(Job).delete()
+    session.query(Handler).delete()
+
     # Create an empty List set to handlers
+    handlers = []
     
     # Create a for loop that iterates 50 times
+    for _ in range(50):
     
         # Create a handler with faker data 
+        handler = Handler(
+            name=f"{faker.first_name()} {faker.last_name()}",
+            email=faker.email(),
+            phone=random.randint(1000000000, 9999999999),
+            hourly_rate=random.uniform(25.50, 60.50)
+        )
        
         # Use .add and .commit to save the handler to the database
-        
+        session.add(handler)
+        session.commit()
+
         # Append handler to handlers
+        handlers.append(handler)
     
     # Create a List of requests: "Walk", "Drop-in" and "Boarding"
-    
+    requests = ["Walk", "Drop-In", "Boarding"]
+
     # Create an empty array and set it to jobs
-    
+    jobs = []
+
     # Create a for loop that iterates over the handlers array
-   
+    for handler in handlers:
+
         # Create a for loop that iterates 1 - 10 times
-        
+        for _ in range(random.randint(1, 10)):
+
             # Create a Job using faker, the requests List and pets List
+            job = Job(
+                request=random.choice(requests),
+                date=faker.date_this_year(),
+                fee=handler.hourly_rate,
+                handler_id= handler.id,
+                pet_id=random.choice(pets).id
+            )
             
             # Append each new job to the jobs List
+            jobs.append(job)
                
-        # Bulk save the jobs
-    
+    # Bulk save the jobs
+    session.bulk_save_objects(jobs)
     session.commit()
     session.close()
 
-# 6. ✅ Run the seeds file and head over to debug.py to test out your Many to Many 
+    # 6. ✅ Run the seeds file and head over to debug.py to test out your Many to Many 
